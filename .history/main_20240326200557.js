@@ -24,13 +24,9 @@ function init() {
 	meshes.default = addBoilerPlateMesh()
 	meshes.standard = addStandardMesh()
 
-	//lights
-	meshes.defaultLight = addLight()
-
 	//scene operations
 	scene.add(meshes.default)
 	scene.add(meshes.standard)
-	scene.add(meshes.defaultLight)
 
 	resize()
 	animate()
@@ -51,9 +47,6 @@ function animate() {
 	// meshes.default.position.y += 0.01
 	meshes.default.rotation.x += 0.01
 	meshes.default.rotation.z += 0.01
-
-	meshes.standard.rotation.x += 0.01
-	meshes.standard.rotation.z += 0.01
 	// meshes.default.scale.x += 0.01
 
 	renderer.render(scene, camera)
