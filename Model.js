@@ -37,6 +37,7 @@ export default class Model {
 			: this.textureLoader.load('/10.png')
 		this.scale = obj.scale || new Vector3(1, 1, 1)
 		this.position = obj.position || new Vector3(0, 0, 0)
+		this.rotation = obj.rotation || new Vector3(0, 0, 0)
 	}
 	init() {
 		this.loader.load(this.file, (gltf) => {
@@ -68,6 +69,11 @@ export default class Model {
 				this.scale.x,
 				this.scale.y,
 				this.scale.z
+			)
+			this.meshes[`${this.name}`].rotation.set(
+				this.rotation.x,
+				this.rotation.y,
+				this.rotation.z
 			)
 			this.scene.add(this.meshes[`${this.name}`])
 		})

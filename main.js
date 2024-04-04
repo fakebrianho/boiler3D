@@ -1,12 +1,9 @@
 import './style.css'
 import * as THREE from 'three'
-import {
-	addBoilerPlateMesh,
-	addStandardMesh,
-	addPlanet1,
-	addPlanet2,
-} from './addMeshes'
+import { addBoilerPlateMesh, addStandardMesh } from './addMeshes'
 import { addLight } from './addLights'
+import Model from './Model'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 const scene = new THREE.Scene()
 const renderer = new THREE.WebGLRenderer({ antialias: true })
@@ -17,9 +14,12 @@ const camera = new THREE.PerspectiveCamera(
 	100
 )
 camera.position.set(0, 0, 5)
-// let mesh
+
+//Globals
 const meshes = {}
-let tick = 0
+const mixers = []
+const clock = new THREE.Clock()
+const controls = new OrbitControls(camera, renderer.domElement)
 init()
 function init() {
 	renderer.setSize(window.innerWidth, window.innerHeight)
@@ -28,8 +28,6 @@ function init() {
 	//meshes
 	meshes.default = addBoilerPlateMesh()
 	meshes.standard = addStandardMesh()
-	meshes.planet1 = addPlanet1()
-	meshes.planet2 = addPlanet2()
 
 	//lights
 	meshes.defaultLight = addLight()
@@ -38,8 +36,6 @@ function init() {
 	meshes.default.scale.set(2, 2, 2)
 
 	//scene operations
-	scene.add(meshes.planet1)
-	scene.add(meshes.planet2)
 	scene.add(meshes.default)
 	scene.add(meshes.standard)
 	scene.add(meshes.defaultLight)
@@ -58,19 +54,14 @@ function resize() {
 
 function animate() {
 	requestAnimationFrame(animate)
-	tick += 0.1
+	const delta = clock.getDelta()
 
 	meshes.default.rotation.x += 0.01
 	meshes.default.rotation.z += 0.01
 
 	meshes.standard.rotation.x += 0.01
 	meshes.standard.rotation.z += 0.01
-	meshes.standard.position.x = Math.sin(tick * 0.1) * 2
-	meshes.standard.position.y = Math.cos(tick * 0.1) * 2
-	meshes.default.position.x = Math.sin(tick * 0.4)
-	meshes.default.position.y = Math.cos(tick * 0.4)
-	meshes.planet2.position.x = Math.sin(tick * 0.2) * 3.5
-	meshes.planet2.position.y = Math.cos(tick * 0.2) * 3.5
+
 	// meshes.default.scale.x += 0.01
 
 	renderer.render(scene, camera)
