@@ -1,11 +1,6 @@
 import './style.css'
 import * as THREE from 'three'
-import {
-	addBoilerPlateMesh,
-	addStandardMesh,
-	addPlanet1,
-	addPlanet2,
-} from './addMeshes'
+import { addBoilerPlateMesh, addStandardMesh, addPlanet1 } from './addMeshes'
 import { addLight } from './addLights'
 
 const scene = new THREE.Scene()
@@ -29,7 +24,6 @@ function init() {
 	meshes.default = addBoilerPlateMesh()
 	meshes.standard = addStandardMesh()
 	meshes.planet1 = addPlanet1()
-	meshes.planet2 = addPlanet2()
 
 	//lights
 	meshes.defaultLight = addLight()
@@ -39,7 +33,6 @@ function init() {
 
 	//scene operations
 	scene.add(meshes.planet1)
-	scene.add(meshes.planet2)
 	scene.add(meshes.default)
 	scene.add(meshes.standard)
 	scene.add(meshes.defaultLight)
@@ -69,8 +62,6 @@ function animate() {
 	meshes.standard.position.y = Math.cos(tick * 0.1) * 2
 	meshes.default.position.x = Math.sin(tick * 0.4)
 	meshes.default.position.y = Math.cos(tick * 0.4)
-	meshes.planet2.position.x = Math.sin(tick * 0.2) * 3.5
-	meshes.planet2.position.y = Math.cos(tick * 0.2) * 3.5
 	// meshes.default.scale.x += 0.01
 
 	renderer.render(scene, camera)

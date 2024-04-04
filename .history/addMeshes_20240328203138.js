@@ -28,7 +28,7 @@ export function addPlanet1() {
 		displacementMap: displace,
 		displacementScale: 0.3,
 		normalMap: norm,
-		// wireframe: true,
+		wireframe: true,
 	})
 	const sphereMesh = new THREE.Mesh(sphere, sphereMat)
 	sphereMesh.position.set(0, 0, 0)

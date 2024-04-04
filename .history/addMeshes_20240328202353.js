@@ -21,13 +21,11 @@ export function addStandardMesh() {
 export function addPlanet1() {
 	const color = textureLoader.load('/COLOR.jpg')
 	const displace = textureLoader.load('/DISP.png')
-	const norm = textureLoader.load('/NORM.jpg')
 	const sphere = new THREE.SphereGeometry(0.5, 32, 16)
 	const sphereMat = new THREE.MeshStandardMaterial({
 		map: color,
 		displacementMap: displace,
 		displacementScale: 0.3,
-		normalMap: norm,
 		// wireframe: true,
 	})
 	const sphereMesh = new THREE.Mesh(sphere, sphereMat)

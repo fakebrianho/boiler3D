@@ -69,8 +69,6 @@ function animate() {
 	meshes.standard.position.y = Math.cos(tick * 0.1) * 2
 	meshes.default.position.x = Math.sin(tick * 0.4)
 	meshes.default.position.y = Math.cos(tick * 0.4)
-	meshes.planet2.position.x = Math.sin(tick * 0.2) * 3.5
-	meshes.planet2.position.y = Math.cos(tick * 0.2) * 3.5
 	// meshes.default.scale.x += 0.01
 
 	renderer.render(scene, camera)
