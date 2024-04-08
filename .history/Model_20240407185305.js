@@ -1,7 +1,6 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler'
-
 import {
 	Color,
 	AnimationMixer,
@@ -13,9 +12,6 @@ import {
 	BufferGeometry,
 	Float32BufferAttribute,
 	AdditiveBlending,
-	MeshBasicMaterial,
-	Group,
-	Mesh,
 } from 'three'
 
 export default class Model {
@@ -42,12 +38,6 @@ export default class Model {
 		this.scale = obj.scale || new Vector3(1, 1, 1)
 		this.position = obj.position || new Vector3(0, 0, 0)
 		this.rotation = obj.rotation || new Vector3(0, 0, 0)
-		this.palette = [
-			new Color('#FAAD80'),
-			new Color('#FF6767'),
-			new Color('#FF3D68'),
-			new Color('#A73489'),
-		]
 	}
 	init() {
 		this.loader.load(this.file, (gltf) => {
@@ -91,18 +81,53 @@ export default class Model {
 	}
 	initPoints() {
 		this.loader.load(this.file, (gltf) => {
-			const meshes = []
-			const pointCloud = new Group()
 			gltf.scene.traverse((child) => {
 				if (child.isMesh) {
-					meshes.push(child)
+					this.mesh = child
 				}
 			})
-			for (const mesh of meshes) {
-				pointCloud.add(this.createPoints(mesh))
+			const palette = [
+				new Color('#FAAD80'),
+				new Color('#FF6767'),
+				new Color('#FF3D68'),
+				new Color('#A73489'),
+			]
+
+			const sampler = new MeshSurfaceSampler(this.mesh).build()
+			const numParticles = 3000
+			const particlesPosition = new Float32Array(numParticles * 3)
+			const particleColors = new Float32Array(numParticles * 3)
+			const newPosition = new Vector3()
+			for (let i = 0; i < numParticles; i++) {
+				sampler.sample(newPosition)
+				const color =
+					palette[Math.floor(Math.random() * palette.length)]
+				particleColors.set([color.r, color.g, color.b], i * 3)
+				particlesPosition.set(
+					[newPosition.x, newPosition.y, newPosition.z],
+					i * 3
+				)
 			}
-			console.log(pointCloud)
-			this.meshes[`${this.name}`] = pointCloud
+			const pointsGeometry = new BufferGeometry()
+			pointsGeometry.setAttribute(
+				'position',
+				new Float32BufferAttribute(particlesPosition, 3)
+			)
+			pointsGeometry.setAttribute(
+				'color',
+				new Float32BufferAttribute(particleColors, 3)
+			)
+			const pointsMaterial = new PointsMaterial({
+				vertexColors: true,
+				transparent: true,
+				alphaMap: this.defaultParticle,
+				alphaTest: 0.001,
+				depthWrite: false,
+				blending: AdditiveBlending,
+				size: 0.3,
+			})
+			const points = new Points(pointsGeometry, pointsMaterial)
+			this.meshes[`${this.name}`] = points
 			this.meshes[`${this.name}`].scale.set(
 				this.scale.x,
 				this.scale.y,
@@ -113,49 +138,7 @@ export default class Model {
 				this.position.y,
 				this.position.z
 			)
-			this.meshes[`${this.name}`].rotation.set(
-				this.rotation.x,
-				this.rotation.y,
-				this.rotation.z
-			)
 			this.scene.add(this.meshes[`${this.name}`])
 		})
-	}
-	createPoints(_mesh) {
-		const sampler = new MeshSurfaceSampler(_mesh).build()
-		const numParticles = 3000
-		const particlesPosition = new Float32Array(numParticles * 3)
-		const particleColors = new Float32Array(numParticles * 3)
-		const newPosition = new Vector3()
-		for (let i = 0; i < numParticles; i++) {
-			sampler.sample(newPosition)
-			const color =
-				this.palette[Math.floor(Math.random() * this.palette.length)]
-			particleColors.set([color.r, color.g, color.b], i * 3)
-			particlesPosition.set(
-				[newPosition.x, newPosition.y, newPosition.z],
-				i * 3
-			)
-		}
-		const pointsGeometry = new BufferGeometry()
-		pointsGeometry.setAttribute(
-			'position',
-			new Float32BufferAttribute(particlesPosition, 3)
-		)
-		pointsGeometry.setAttribute(
-			'color',
-			new Float32BufferAttribute(particleColors, 3)
-		)
-		const pointsMaterial = new PointsMaterial({
-			vertexColors: true,
-			transparent: true,
-			alphaMap: this.defaultParticle,
-			alphaTest: 0.001,
-			depthWrite: false,
-			blending: AdditiveBlending,
-			size: 0.12,
-		})
-		const points = new Points(pointsGeometry, pointsMaterial)
-		return points
 	}
 }

@@ -1,6 +1,7 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler'
+import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier'
 
 import {
 	Color,
@@ -13,9 +14,7 @@ import {
 	BufferGeometry,
 	Float32BufferAttribute,
 	AdditiveBlending,
-	MeshBasicMaterial,
 	Group,
-	Mesh,
 } from 'three'
 
 export default class Model {
@@ -95,6 +94,7 @@ export default class Model {
 			const pointCloud = new Group()
 			gltf.scene.traverse((child) => {
 				if (child.isMesh) {
+					this.mesh = child
 					meshes.push(child)
 				}
 			})
@@ -102,35 +102,64 @@ export default class Model {
 				pointCloud.add(this.createPoints(mesh))
 			}
 			console.log(pointCloud)
-			this.meshes[`${this.name}`] = pointCloud
-			this.meshes[`${this.name}`].scale.set(
-				this.scale.x,
-				this.scale.y,
-				this.scale.z
-			)
-			this.meshes[`${this.name}`].position.set(
-				this.position.x,
-				this.position.y,
-				this.position.z
-			)
-			this.meshes[`${this.name}`].rotation.set(
-				this.rotation.x,
-				this.rotation.y,
-				this.rotation.z
-			)
-			this.scene.add(this.meshes[`${this.name}`])
+
+			// const sampler = new MeshSurfaceSampler(this.mesh).build()
+			// const numParticles = 1000
+			// const particlesPosition = new Float32Array(numParticles * 3)
+			// const particleColors = new Float32Array(numParticles * 3)
+			// const newPosition = new Vector3()
+			// for (let i = 0; i < numParticles; i++) {
+			// 	sampler.sample(newPosition)
+			// 	const color =
+			// 		palette[Math.floor(Math.random() * palette.length)]
+			// 	particleColors.set([color.r, color.g, color.b], i * 3)
+			// 	particlesPosition.set(
+			// 		[newPosition.x, newPosition.y, newPosition.z],
+			// 		i * 3
+			// 	)
+			// }
+			// const pointsGeometry = new BufferGeometry()
+			// pointsGeometry.setAttribute(
+			// 	'position',
+			// 	new Float32BufferAttribute(particlesPosition, 3)
+			// )
+			// pointsGeometry.setAttribute(
+			// 	'color',
+			// 	new Float32BufferAttribute(particleColors, 3)
+			// )
+			// const pointsMaterial = new PointsMaterial({
+			// 	vertexColors: true,
+			// 	transparent: true,
+			// 	alphaMap: this.defaultParticle,
+			// 	alphaTest: 0.001,
+			// 	depthWrite: false,
+			// 	blending: AdditiveBlending,
+			// 	size: 0.3,
+			// })
+			// const points = new Points(pointsGeometry, pointsMaterial)
+			// this.meshes[`${this.name}`] = points
+			// this.meshes[`${this.name}`].scale.set(
+			// 	this.scale.x,
+			// 	this.scale.y,
+			// 	this.scale.z
+			// )
+			// this.meshes[`${this.name}`].position.set(
+			// 	this.position.x,
+			// 	this.position.y,
+			// 	this.position.z
+			// )
+			// this.scene.add(this.meshes[`${this.name}`])
 		})
 	}
-	createPoints(_mesh) {
-		const sampler = new MeshSurfaceSampler(_mesh).build()
-		const numParticles = 3000
+	createPoints() {
+		const sampler = new MeshSurfaceSampler(this.mesh).build()
+		const numParticles = 1000
 		const particlesPosition = new Float32Array(numParticles * 3)
 		const particleColors = new Float32Array(numParticles * 3)
 		const newPosition = new Vector3()
 		for (let i = 0; i < numParticles; i++) {
 			sampler.sample(newPosition)
-			const color =
-				this.palette[Math.floor(Math.random() * this.palette.length)]
+			const color = palette[Math.floor(Math.random() * palette.length)]
 			particleColors.set([color.r, color.g, color.b], i * 3)
 			particlesPosition.set(
 				[newPosition.x, newPosition.y, newPosition.z],
@@ -153,7 +182,7 @@ export default class Model {
 			alphaTest: 0.001,
 			depthWrite: false,
 			blending: AdditiveBlending,
-			size: 0.12,
+			size: 0.3,
 		})
 		const points = new Points(pointsGeometry, pointsMaterial)
 		return points
